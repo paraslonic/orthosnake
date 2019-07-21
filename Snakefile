@@ -27,7 +27,7 @@ rule prokka:
 	conda: "conda.yaml"
 	shell:
 		"name=$(basename {input} .fna);"
-		".snakemake/conda/0abb82d4/bin/prokka --cpus {threads} --outdir {output} --force --prefix $name --locustag $name {input}"
+		"prokka --cpus {threads} --outdir {output} --force --prefix $name --locustag $name {input}"
 
 rule make_faa:
 	input:
