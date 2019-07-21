@@ -17,17 +17,17 @@ rule orthofinder:
 	conda: "conda.yaml"
 	log: "log_of.txt"
 	shell:
-		"bash scripts/run_orthofinder.sh {config[orthofinder.bin]} {threads} > {log}"
+		"bash scripts/run_orthofinder.sh {threads} > {log}"
 rule prokka:
 	input:
 		ancient("fna/{qu}.fna")
 	output:
 		"prokka/{qu}"
 	threads: 4
-	conda: "orthosnake.yaml"
+	conda: "conda.yaml"
 	shell:
 		"name=$(basename {input} .fna);"
-		"prokka --cpus {threads} --outdir {output} --force --prefix $name --locustag $name {input}"
+		".snakemake/conda/0abb82d4/bin/prokka --cpus {threads} --outdir {output} --force --prefix $name --locustag $name {input}"
 
 rule make_faa:
 	input:
