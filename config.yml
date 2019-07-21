@@ -1,4 +1,2 @@
 software:
-orthofinder.bin: '/data7a/bio/operonTravel/wave2_newOF/OrthoFinder-2.2.6/./orthofinder'
 python.bin: '/srv/common/bin/python3'
-gcb.path: '/data4/bio/operonTravel_d4/geneGraph/source'
