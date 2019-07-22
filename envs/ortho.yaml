@@ -1,8 +1,5 @@
 channels:
-  - bioconda
   - conda-forge
-  - defaults
+  - bioconda
 dependencies:
-  - biopython
-  - prokka
   - orthofinder
