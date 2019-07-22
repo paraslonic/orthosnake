@@ -5,4 +5,3 @@ run with `snakemake --use-conda`
 
 If genome files have extension other than .fna please rename the files, i.e. with following command:
 `for i in fna/*.fasta; do mv $i fna/$(basename $i .fasta).fna; done`
-
