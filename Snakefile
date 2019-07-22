@@ -6,13 +6,13 @@ localrules: all,  make_path, calc_complexity
 
 rule all:
 	input: 
-		"tmp/Orthogroups.txt"
+		"Results/Orthogroups.txt"
 
 rule orthofinder:
 	input: 
 		expand("faa/{qu}.fasta", qu=GENOMES)
 	output:
-		"tmp/Orthogroups.txt"
+		"Results/Orthogroups.txt"
 	threads: 4
 	conda: "envs/ortho.yaml"
 	log: "log_of.txt"
