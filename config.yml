@@ -1,2 +1,2 @@
 software:
-python.bin: '/srv/common/bin/python3'
+python.bin: '/usr/bin/python3'

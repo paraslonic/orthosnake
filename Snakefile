@@ -22,7 +22,7 @@ rule prokka:
 	input:
 		ancient("fna/{qu}.fna")
 	output:
-		"prokka/{qu}"
+		directory("prokka/{qu}")
 	threads: 4
 	conda: "conda.yaml"
 	shell:
@@ -34,6 +34,7 @@ rule make_faa:
 		ancient("prokka/{qu}")
 	output:
 		"faa/{qu}.fasta"
+	conda: "conda.yaml"
 	shell:
 		"name=$(basename {input});"
-		"{config[python.bin]} GB2faa.py {input}/$name.gbk > {output}"
+		"{config[python.bin]} scripts/GBfaa.py {input}/$name.gbk > {output}"
