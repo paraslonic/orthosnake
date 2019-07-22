@@ -4,4 +4,4 @@ Please place fasta formated genomes (with *.fna extension) in the fna folder.
 run with `snakemake --use-conda`
 
 If genome files have extension other than *.fna please rename the files, i.e. with following command:
-for i in fna/*.fasta; do mv $i fna/$(basename $i .fasta).fna; done
+`for i in fna/*.fasta; do mv $i fna/$(basename $i .fasta).fna; done`
