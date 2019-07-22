@@ -14,7 +14,7 @@ rule orthofinder:
 	output:
 		"tmp/Orthogroups.txt"
 	threads: 4
-	conda: "conda.yaml"
+	conda: "envs/ortho.yaml"
 	log: "log_of.txt"
 	shell:
 		"bash scripts/run_orthofinder.sh {threads} > {log}"
@@ -24,7 +24,7 @@ rule prokka:
 	output:
 		directory("prokka/{qu}")
 	threads: 4
-	conda: "conda.yaml"
+	conda: "envs/prokka.yaml"
 	shell:
 		"name=$(basename {input} .fna);"
 		"prokka --cpus {threads} --outdir {output} --force --prefix $name --locustag $name {input}"
@@ -34,7 +34,7 @@ rule make_faa:
 		ancient("prokka/{qu}")
 	output:
 		"faa/{qu}.fasta"
-	conda: "conda.yaml"
+	conda: "envs/scripts.yaml"
 	shell:
 		"name=$(basename {input});"
-		"{config[python.bin]} scripts/GBfaa.py {input}/$name.gbk > {output}"
+		"python3 scripts/GBfaa.py -gb  {input}/$name.gbk > {output}"
