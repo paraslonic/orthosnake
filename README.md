@@ -5,3 +5,5 @@ Run with `snakemake --use-conda`
 
 If genome files have extension other than .fna please rename them, i.e. with following command:
 `for i in fna/*.fasta; do mv $i fna/$(basename $i .fasta).fna; done`
+
+fna folder contains three example sequences of *E. coli* plasmids for test run of the script. 
