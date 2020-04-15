@@ -15,7 +15,10 @@ rule orthofinder:
 	conda: "envs/ortho.yaml"
 	log: "log_of.txt"
 	shell:
-		"bash scripts/run_orthofinder.sh {threads} > {log}"
+		"""
+		orthofinder -t {threads} -a {threads} -og -f faa > {log}
+		find faa -name 'Orthogroups.txt' -exec cp {} Results \;  
+		"""
 rule prokka:
 	input:
 		ancient("fna/{qu}.fna")
