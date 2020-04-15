@@ -1,5 +1,3 @@
-configfile: 'config.yml'
-
 GENOMES, = glob_wildcards("fna/{genome}.fna")
 
 localrules: all,  make_path, calc_complexity
