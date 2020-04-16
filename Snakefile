@@ -10,14 +10,11 @@ rule orthofinder:
 		expand("faa/{qu}.fasta", qu=GENOMES)
 	output:
 		"Results/Orthogroups.txt"
-	threads: 4
+	threads: 50
 	conda: "envs/ortho.yaml"
 	log: "log_of.txt"
 	shell:
-		"""
-		orthofinder -t {threads} -a {threads} -og -f faa > {log}
-		find faa -name 'Orthogroups.txt' -exec cp {} Results \;  
-		"""
+		"bash scripts/run_orthofinder.sh {threads} > {log}"
 rule prokka:
 	input:
 		ancient("fna/{qu}.fna")
