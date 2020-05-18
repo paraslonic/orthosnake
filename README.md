@@ -15,3 +15,8 @@ checked for header length.
   * If header contains symbols other than alphanumericals and `_` they are converted to `_`
 
   * If header is longer than 20 symbols it is cropped to first 18 symbols and dots are added to the end (i.e. `gi|15829254|ref|NC_002695.1` becomes `gi|15829254|ref|NC..`)
+* annotation with Prokka 
+* fasta files with amino acid sequences are generated from genebank files, gene location and product information is added to headers
+* orthogroups inferred with OrthoFinder  
+ 
+
