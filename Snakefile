@@ -15,8 +15,15 @@ rule orthofinder:
 	log: "log_of.txt"
 	shell:
 		"bash scripts/run_orthofinder.sh {threads} > {log}"
-rule prokka:
+
+rule check_fna:
 	input: "fna/{genome}.fna"
+	output: "fna_final/{genome}.fna"
+	conda: "envs/scripts.yaml"
+	shell:	"python scripts/cropHeader.py -input  {input} -out {output} -n 20"
+		
+rule prokka:
+	input: "fna_final/{genome}.fna"
 	output:
 		"prokka/{genome}/{genome}.gbk"
 	threads: 4
@@ -33,4 +40,4 @@ rule make_faa:
 	conda: "envs/scripts.yaml"
 	shell:
 		"name=$(basename {input});"
-		"python3 scripts/GBfaa.py -gb  {input} > {output}"
+		"python scripts/GBfaa.py -gb  {input} > {output}"
