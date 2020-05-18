@@ -10,4 +10,8 @@ fna folder contains three example sequences of *E. coli* plasmids for test run o
 
 ### Algorightm
 
-1) Fasta formated files are checked for header length. If header is longer than 20 symbols it is cropped to first 18 symbols and dots are added to the end (i.e. `gi|15829254|ref|NC_002695.1` becomes `gi|15829254|ref|NC..`)
+* Fasta formated files are modified if neccessary to be consisten with prokka annotation tool. 
+checked for header length. 
+  * If header contains symbols other than alphanumericals and `_` they are converted to `_`
+
+  * If header is longer than 20 symbols it is cropped to first 18 symbols and dots are added to the end (i.e. `gi|15829254|ref|NC_002695.1` becomes `gi|15829254|ref|NC..`)
