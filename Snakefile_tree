@@ -1,0 +1,108 @@
+GENOMES, = glob_wildcards("fna/{genome}.fna")
+
+rule all:
+	input: 
+		"Results/Orthogroups.txt",
+        "Results/coreogs_nucleotide.treefile"
+
+rule check_fna:
+	input: "fna/{genome}.fna"
+	output: "fna_final/{genome}.fna"
+	conda: "envs/scripts.yaml"
+	shell:	"python scripts/cropHeader.py -input  {input} -out {output} -n 20"
+		
+rule prokka:
+	input: "fna_final/{genome}.fna"
+	output:
+		"prokka/{genome}/{genome}.gbk"
+	threads: 4
+	conda: "envs/prokka.yaml"
+	shell:
+		"""
+		prokka --cpus {threads} --outdir prokka/{wildcards.genome} --force --prefix {wildcards.genome} --locustag {wildcards.genome} {input} 2>/dev/null
+		#cp prokka/{wildcards.genome}/{wildcards.genome}.gbf prokka/{wildcards.genome}/{wildcards.genome}.gbk 2>/dev/null
+		"""
+
+rule make_faa:
+	input:	"prokka/{genome}/{genome}.gbk"
+	output: "faa/{genome}.fasta"
+	conda: "envs/scripts.yaml"
+	shell:
+		"name=$(basename {input});"
+		"python scripts/GBfaa.py -gb  {input} > {output}"
+
+rule make_ffn:
+	input:	"prokka/{genome}/{genome}.gbk"
+	output: "ffn/{genome}.fasta"
+	conda: "envs/scripts.yaml"
+	shell:
+		"name=$(basename {input});"
+		"python scripts/GBffn.py -gb  {input} > {output}"
+
+rule orthofinder:
+	input: 
+		expand("faa/{genome}.fasta", genome=GENOMES)
+	output:
+		"Results/Orthogroups.txt"
+	threads: 50
+	conda: "envs/ortho.yaml"
+	log: "log_of.txt"
+	shell:
+		"bash scripts/run_orthofinder.sh {threads} > {log}"
+
+
+checkpoint makeCoreOGfastas: 
+	input:
+		og="Results/Orthogroups.txt",
+		ffns=expand("ffn/{qu}.fasta", qu=GENOMES)
+	output:
+		coreog=directory("Results/ortho/coreogs_prot")
+	shell:
+		"""
+		mkdir -p tmp
+		cat ffn/*.fasta > tmp/all_genes_nuc.fasta
+		cat faa/*.fasta > tmp/all_genes_prot.fasta
+        mkdir -p Results/ortho/
+		mkdir -p Results/ortho/coreogs_nuc Results/ortho/coreogs_prot
+		perl scripts/splitToOg.pl Results/Orthogroups.txt tmp/all_genes_nuc.fasta Results/ortho/coreogs_nuc Results/Orthogroups_SingleCopyOrthologues.txt
+		perl scripts/splitToOg.pl Results/Orthogroups.txt tmp/all_genes_prot.fasta Results/ortho/coreogs_prot Results/Orthogroups_SingleCopyOrthologues.txt
+		"""		
+
+rule align_core_prot:
+	input:
+		"Results/ortho/coreogs_prot/{og}.fasta"
+	output:
+		"Results/ortho/coreogs_aligned_prot/{og}.fasta"
+	shell:
+		"helpers/./muscle -in {input} -out {output} -quiet"
+
+rule pal2nal:
+	input:
+		prot="Results/ortho/coreogs_aligned_prot/{og}.fasta",
+		nuc="Results/ortho/coreogs_nuc/{og}.fasta"
+	output:
+		"Results/ortho/coreogs_aligned_nuc/{og}.fasta"
+	shell:
+		"perl helpers/pal2nal.pl {input.prot} {input.nuc} -output fasta > {output}"
+
+def aggregate_input(wildcards):
+    checkpoint_output = checkpoints.makeCoreOGfastas.get(**wildcards).output[0]
+    ogs = expand("Results/ortho/coreogs_aligned_nuc/{og}.fasta",
+           og=glob_wildcards(os.path.join(checkpoint_output, "{og}.fasta")).og)
+    return ogs
+
+rule cat_core:
+    input: aggregate_input
+    output: "tmp/coreogaligned.fasta"
+    conda: "envs/scripts_tree.yaml"
+    shell:
+        "echo {input};"
+        "perl scripts/concatenate_core.pl Results/ortho/coreogs_aligned_nuc {output}"
+
+rule tree_for_core:
+	input: rules.cat_core.output
+	threads: 20
+	output:
+		"Results/coreogs_nucleotide.treefile"
+	shell:
+		"iqtree -s {input} -nt {threads} -pre Results/coreogs_nucleotide -redo -m MFP"
