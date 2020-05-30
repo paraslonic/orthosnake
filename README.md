@@ -6,14 +6,12 @@ Run with `snakemake --use-conda`
 If genome files have extension other than .fna please rename them, i.e. with following command:
 `for i in fna/*.fasta; do mv $i fna/$(basename $i .fasta).fna; done`
 
-fna folder contains three example sequences of *E. coli* plasmids for test run of the script. 
+test_fna folder contains three example sequences of *E. coli* plasmids, which may be used for testing the pipeline. 
 
 ### Algorightm
 
-* Fasta formated files are modified if neccessary to be consisten with prokka annotation tool. 
-checked for header length. 
+* Fasta formated files are modified if neccessary to be consisten with prokka annotation tool.  
   * If header contains symbols other than alphanumericals and `_` they are converted to `_`
-
   * If header is longer than 20 symbols it is cropped to first 18 symbols and dots are added to the end (i.e. `gi|15829254|ref|NC_002695.1` becomes `gi|15829254|ref|NC..`)
 * annotation with Prokka 
 * fasta files with amino acid sequences are generated from genebank files, gene location and product information is added to headers
