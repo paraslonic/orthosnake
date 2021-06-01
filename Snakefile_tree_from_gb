@@ -84,8 +84,8 @@ rule cat_core:
 
 rule tree_for_core:
     input: rules.cat_core.output
-    threads: 20
+    threads: 50
     output:
         "Results/coreogs_nucleotide.treefile"
     shell:
-        "iqtree -s {input} -nt {threads} -pre Results/coreogs_nucleotide -redo -m MFP"
+        "iqtree -s {input} -nt {threads} -pre Results/coreogs_nucleotide -redo -m MFP -B 1000"
