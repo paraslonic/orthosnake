@@ -7,7 +7,7 @@ rule all:
 
 
 rule make_faa:
-    input:    "gb//{genome}.gbff"
+    input:    "gb/{genome}.gbff"
     output: "faa/{genome}.fasta"
     conda: "envs/scripts.yaml"
     shell:

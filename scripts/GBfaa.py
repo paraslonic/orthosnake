@@ -15,7 +15,7 @@ name = os.path.splitext(name)[0]
 id_ = 1
 for gb in gbs:
     contig = gb.name
-    feats = [feat for feat in gb.features if feat.type=='CDS']
+    feats = [feat for feat in gb.features if feat.type=='CDS' and ('translation' in feat.qualifiers.keys())]
     for feat in feats:
         print('>' + name + '|' +
                 str(id_) + '|' +
