@@ -1,6 +1,7 @@
 import sys
 import os
 from Bio import SeqIO
+import pandas as pd
 
 orthologousGroupsFile = sys.argv[1] # файл с ортогруппами (txt)
 sequencesFile= sys.argv[2]; # мультифаста со всеми последовательностями генов
@@ -16,35 +17,24 @@ else:
 
 ogList = []
 
-with open(ogListFile, "r") as oglistfile:
-    for og in oglistfile: 
-        ogList.append(og.strip())
+# create list of the ogs
+# it just read the ogListFile as csv dataframe with only one column, and values of this column are trasformed to a list
+ogList = list(pd.read_csv(ogListFile, header = None)[0])
 
-gene_og = {}
+# read orthogroups.txt as dataframe, which has twho columns: ogs and genes of ogs
+orthoFile = pd.read_table(orthologousGroupsFile, header = None, sep = ':').set_axis(['og', 'genes'], axis = 1)
+orthoFile.genes = orthoFile.genes.apply(lambda x: x.strip()) # delete technical characters and spaces
+orthoFile = orthoFile[orthoFile.og.isin(ogList)] # delete all orthogroups that are not in ogList
 
-with open(orthologousGroupsFile, "r") as ogfile:
-    for ogline in ogfile:
-        ogline = ogline.strip()
-        [og, genesStr] = ogline.split(": ")
-        genes = genesStr.split(" ")
-        if not og in ogList: continue
-        for gene in genes:
-            genome_geneid = tuple(gene.split("|")[0:2])
-            gene_og[genome_geneid] = og        
-
-og_records = {}
-
+# make a dictionary with names of genes as keys and its sequences as values
+seq_dict = {}
 for seq_record in SeqIO.parse(sequencesFile, "fasta"):
-    seq_id = seq_record.id
-    seq_genome_geneid = tuple(seq_id.split("|")[0:2])
-    if seq_genome_geneid in gene_og:
-        og = gene_og[seq_genome_geneid]
-        if(og in og_records):
-            og_records[og].append(seq_record)
-        else:
-            og_records[og] = []
-
-for og in og_records:
-    fname=outputFolder+"/"+og+".fasta"
-    with open(fname,"w") as outfile:
-        SeqIO.write(og_records[og],outfile,"fasta")
+    seq_dict[seq_record.id] = str(seq_record.seq)
+    
+for index, row in orthoFile.iterrows():
+    og = row[0]
+    genes = row[1]
+    with open((outputFolder+og+ '.fasta'), 'w') as handle:
+        for gene in genes.split(' '):
+            handle.write(('>'+gene+'\n'))
+            handle.write((seq_dict.pop(gene) + '\n'))         
