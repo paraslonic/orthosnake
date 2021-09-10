@@ -91,5 +91,6 @@ rule make_families_file:
 rule run_generax:
     input: 'tmp/familiesFile.txt'
     output: directory('Results/geneRaxResults')
+    conda: 'envs/generax.yaml'
     threads: 10
-    shell:'mpiexec -np 10 helpers/GeneRax/build/bin/generax -f {input} -s random -p {output}'
+    shell:'mpiexec -np 10 generax -f {input} -s random -p {output}'

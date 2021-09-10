@@ -2,11 +2,20 @@ import sys
 import os
 from Bio import SeqIO
 import pandas as pd
+# This script makes orthogroup fasta files
+'''
+It works like this:
+    1. It reads a fiel with a lsit of required ogs and makes ogList
+    2. Read orthogroups file as dataframe with two columns: og and gene. The gene column contains space separated gene names
+    3. Detete from orthogroups frame all ogs that is not in ogList
+    4. It reads a fasta file which contains sequences of all genes, creates a dictionary from it
+    5. it itetate over rows of orthogroups frame, in every row it iterates over gene names, for all gene name it looks for its sequence in sequences dicionary. Then it white sequence to og fasta file
+'''
 
-orthologousGroupsFile = sys.argv[1] # файл с ортогруппами (txt)
-sequencesFile= sys.argv[2]; # мультифаста со всеми последовательностями генов
-ogListFile=sys.argv[3] # файл с именами огешек, которые нужно превратить в фасты
-outputFolder=sys.argv[4] # папка куда будут записываться фасты на каждую отдельную ог-ку
+orthologousGroupsFile = sys.argv[1] # a text with orthologs. The file format is 'orthogroup1 : gene1 gene 2 gene3', one orthogroup on one line
+sequencesFile= sys.argv[2]; # fasta file with all genes sequences
+ogListFile=sys.argv[3] # A fiel with names of required orthogroups. One og on one line
+outputFolder=sys.argv[4] # output folder :)
 
 try:
     os.makedirs(outputFolder)
@@ -30,11 +39,12 @@ orthoFile = orthoFile[orthoFile.og.isin(ogList)] # delete all orthogroups that a
 seq_dict = {}
 for seq_record in SeqIO.parse(sequencesFile, "fasta"):
     seq_dict[seq_record.id] = str(seq_record.seq)
-    
-for index, row in orthoFile.iterrows():
+
+# make og fasta files
+for index, row in orthoFile.iterrows(): # iter over ogs
     og = row[0]
     genes = row[1]
-    with open((outputFolder+og+ '.fasta'), 'w') as handle:
-        for gene in genes.split(' '):
+    with open((outputFolder+og+ '.fasta'), 'w') as handle: # open og fasta file
+        for gene in genes.split(' '): # iter over genes of the og
             handle.write(('>'+gene+'\n'))
-            handle.write((seq_dict.pop(gene) + '\n'))         
+            handle.write((seq_dict.pop(gene) + '\n')) # look for sequence of the gene and write it
