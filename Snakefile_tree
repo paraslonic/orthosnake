@@ -96,12 +96,12 @@ rule cat_core:
     output: "tmp/coreogaligned.fasta"
     conda: "envs/scripts_tree.yaml"
     shell:
-        "echo {input};"
         "perl scripts/concatenate_core.pl Results/ortho/coreogs_aligned_nuc {output}"
 
 rule tree_for_core:
     input: rules.cat_core.output
     threads: 20
+    conda: "envs/scripts_tree.yaml"
     output:
         "Results/coreogs_nucleotide.treefile"
     shell:
