@@ -1,23 +1,10 @@
-# Добавить создание fasta с нуклеотидами и аминокислотами с ортогруппами из orthogrops.txt в папку tmp.
-# Выравнять аминкоислоты
-# По аминокислоатм выравнять нуклеотиды
-# Генеракс
-#GENOMES, = glob_wildcards("tmp/og_fasta_aa/{og}.fa")
-#rule all: 
-#    input: expand("tmp/og_aligned_aa/{og}.fasta", og=GENOMES)
-
 import pandas as pd
 ogs = pd.read_table('Results/Orthogroups.txt', sep = ':', header=None)
 ogs = list(ogs[0])
 
 
 rule all:
-    #input: 'tmp/ogs_nt_fasta/', 'tmp/ogs_aa_fasta/'
-    #input: expand('tmp/map_files/{og}.txt', og=ogs)
     input: 'Results/geneRaxResults'
-    
-    
-# Добавить фильтр по количеству последовательностей
 
 rule create_og_list:
     input: 'Results/Orthogroups.txt'

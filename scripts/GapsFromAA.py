@@ -6,7 +6,7 @@ nuc_file = sys.argv[1]
 prot_file = sys.argv[2]
 out_file = sys.argv[3]
 seq_dict = {}
-nucs = parse(nuc_file, format='fasta') # nucs - текущий файл с сиквенсом нуклеотидов
+nucs = parse(nuc_file, format='fasta') # nucs - current nucleotide fasta file
 for rec in nucs: # 
     prots = parse(prot_file, format='fasta')
 

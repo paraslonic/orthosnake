@@ -5,14 +5,14 @@ rule all:
 	input: 
 		"Results/Orthogroups.txt", expand("tmp/genome_fasta_nt/{genome}.fasta", genome=GENOMES)
     
-# Сокращает длинны заголовков
+# Shortens the lengths of headings 
 rule check_genomes_input:
 	input: "genomes_input/{genome}.fna"
 	output: "tmp/genomes_cut/{genome}.fna"
 	conda: "envs/scripts.yaml"
 	shell:	"python scripts/cropHeader.py -input  {input} -out {output} -n 20"
 		
-# Анотирует геномы
+# Annotate genomes
 rule prokka:
 	input: "tmp/genomes_cut/{genome}.fna"
 	output:
@@ -24,7 +24,7 @@ rule prokka:
 		prokka --cpus {threads} --outdir prokka/{wildcards.genome} --force --prefix {wildcards.genome} --locustag {wildcards.genome} {input} 2>/dev/null
 		#cp prokka/{wildcards.genome}/{wildcards.genome}.gbf prokka/{wildcards.genome}/{wildcards.genome}.gbk 2>/dev/null
 		"""
-# Конверирует генбанк в fasta со специальным заголовком. Один fasta на один геном
+# Converts a genebank to fasta with a special header. One fasta per genome 
 rule make_genome_fasta_aa:
 	input:	"prokka/{genome}/{genome}.gbk"
 	output: "tmp/genome_fasta_aa/{genome}.fasta"
@@ -41,8 +41,7 @@ rule make_genome_fasta_nt:
 		"name=$(basename {input});"
 		"python scripts/GB_genome_fasta_nt.py -gb  {input} > {output}"
   
-# Берет все fasta, запускает на них ортофайндер
-# Объединяет похожие белки в ортогруппы
+# Takes everything fasta, launches an orthofinder on them 
 rule orthofinder:
 	input: 
 		expand("tmp/genome_fasta_aa/{genome}.fasta", genome=GENOMES)
