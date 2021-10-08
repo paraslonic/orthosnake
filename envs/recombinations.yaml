@@ -1,0 +1,15 @@
+name: recombinations-env
+channels:
+  - bioconda
+  - conda-forge
+  - anaconda
+dependencies:
+  - parallel-fastq-dump
+  - minimap2
+  - samtools
+  - bedtools
+  - graphviz
+  - pygraphviz==1.7
+  - pip
+  - pip:
+      - gene_graph_lib
