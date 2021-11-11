@@ -83,7 +83,7 @@ rule pal2nal:
     output:
         "Results/ortho/coreogs_aligned_nuc/{og}.fasta"
     shell:
-	"python scripts/GapsFromAA.py {input.nuc} {input.prot} {output}"
+        "python scripts/GapsFromAA.py {input.nuc} {input.prot} {output}"
 
 def aggregate_input(wildcards):
     checkpoint_output = checkpoints.makeCoreOGfastas.get(**wildcards).output[0]
@@ -96,7 +96,7 @@ rule cat_core:
     output: "tmp/coreogaligned.fasta"
     conda: "envs/scripts_tree.yaml"
     shell:
-	"python scripts/concatenate.py {input} {output}"
+        "python scripts/concatenate.py {input} {output}"
 
 rule tree_for_core:
     input: rules.cat_core.output
