@@ -20,7 +20,6 @@ rule prokka:
     shell:
         """
         prokka --cpus {threads} --outdir prokka/{wildcards.genome} --force --prefix {wildcards.genome} --locustag {wildcards.genome} {input} 2>/dev/null
-        #cp prokka/{wildcards.genome}/{wildcards.genome}.gbf prokka/{wildcards.genome}/{wildcards.genome}.gbk 2>/dev/null
         """
 
 rule make_faa:
@@ -32,7 +31,7 @@ rule make_faa:
         "python scripts/GBfaa.py -gb  {input} > {output}"
 
 rule make_ffn:
-    input:    "prokka/{genome}/{genome}.gbk"
+    input:  "prokka/{genome}/{genome}.gbk"
     output: "ffn/{genome}.fasta"
     conda: "envs/scripts.yaml"
     shell:
@@ -57,6 +56,7 @@ checkpoint makeCoreOGfastas:
         ffns=expand("ffn/{qu}.fasta", qu=GENOMES)
     output:
         coreog=directory("Results/ortho/coreogs_prot")
+    conda: "envs/scripts.yaml"
     shell:
         """
         mkdir -p tmp
@@ -64,8 +64,8 @@ checkpoint makeCoreOGfastas:
         cat faa/*.fasta > tmp/all_genes_prot.fasta
         mkdir -p Results/ortho/
         mkdir -p Results/ortho/coreogs_nuc Results/ortho/coreogs_prot
-        python scripts/splitToOg.py Results/Orthogroups.txt tmp/all_genes_nuc.fasta Results/Orthogroups_SingleCopyOrthologues.txt Results/ortho/coreogs_nuc 
-        python scripts/splitToOg.py Results/Orthogroups.txt tmp/all_genes_prot.fasta Results/Orthogroups_SingleCopyOrthologues.txt Results/ortho/coreogs_prot
+        python scripts/splitToOg.py Results/Orthogroups.txt tmp/all_genes_nuc.fasta Results/Orthogroups_SingleCopyOrthologues.txt Results/ortho/coreogs_nuc/
+        python scripts/splitToOg.py Results/Orthogroups.txt tmp/all_genes_prot.fasta Results/Orthogroups_SingleCopyOrthologues.txt Results/ortho/coreogs_prot/
         """        
 
 rule align_core_prot:
@@ -82,6 +82,7 @@ rule pal2nal:
         nuc="Results/ortho/coreogs_nuc/{og}.fasta"
     output:
         "Results/ortho/coreogs_aligned_nuc/{og}.fasta"
+    conda: "envs/scripts.yaml"
     shell:
         "python scripts/GapsFromAA.py {input.nuc} {input.prot} {output}"
 
@@ -94,7 +95,7 @@ def aggregate_input(wildcards):
 rule cat_core:
     input: aggregate_input
     output: "tmp/coreogaligned.fasta"
-    conda: "envs/scripts_tree.yaml"
+    conda: "envs/scripts.yaml"
     shell:
         "python scripts/concatenate.py {input} {output}"
 
