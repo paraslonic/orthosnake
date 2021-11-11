@@ -64,8 +64,8 @@ checkpoint makeCoreOGfastas:
         cat faa/*.fasta > tmp/all_genes_prot.fasta
         mkdir -p Results/ortho/
         mkdir -p Results/ortho/coreogs_nuc Results/ortho/coreogs_prot
-        perl scripts/splitToOg.pl Results/Orthogroups.txt tmp/all_genes_nuc.fasta Results/ortho/coreogs_nuc Results/Orthogroups_SingleCopyOrthologues.txt
-        perl scripts/splitToOg.pl Results/Orthogroups.txt tmp/all_genes_prot.fasta Results/ortho/coreogs_prot Results/Orthogroups_SingleCopyOrthologues.txt
+        python scripts/splitToOg.py Results/Orthogroups.txt tmp/all_genes_nuc.fasta Results/Orthogroups_SingleCopyOrthologues.txt Results/ortho/coreogs_nuc 
+        python scripts/splitToOg.py Results/Orthogroups.txt tmp/all_genes_prot.fasta Results/Orthogroups_SingleCopyOrthologues.txt Results/ortho/coreogs_prot
         """        
 
 rule align_core_prot:
